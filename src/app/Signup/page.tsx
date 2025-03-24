@@ -1,20 +1,37 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link"
+import toast from "react-hot-toast";
 
 export default function SignupPage(){
+    const router = useRouter();
     const [user,setUser] = React.useState({
         email:"",
         password:"",
         username:"",
     })
+    const [buttonDisable,setButtonDisable] = React.useState(false);
+
+    useEffect(() => {
+        if (user.email.length > 5 && user.username.length > 3 && user.password.length > 5) {
+            setButtonDisable(false); // <-- Change this
+        } else {
+            setButtonDisable(true);
+        }
+    }, [user]);
+
     const onSignup=async()=>{
         try{
-            const user = await axios.post('');
-        }catch(err){
-            console.log(err);
+            const res = await axios.post('/api/users/signup', user, { withCredentials: true });
+            console.log('Signup Success',res.data);
+            router.push('/login');
+        }catch(error:any){
+            toast.error(error.message)
+            console.log(error);
+        }finally{
+
         }
     }
     return(
@@ -35,10 +52,13 @@ export default function SignupPage(){
                        <label className="text-xs text-zinc-300 select-none" htmlFor="">Enter Password</label>
                         <input value={user.password} onChange={(e)=>setUser({...user,password:e.target.value})} type="password" className="block w-full px-3 py-2 bg-neutral-800 border-1 rounded-md tracking-wide outline-none border-zinc-200" name="" id="" placeholder="Enter Password"  />
                        </div>
-                       <button onClick={onSignup} className="w-[40%] rounded-lg px-3 py-2 mt-4 text-center text-black bg-green-600 text-md">SignUp</button>
+                        {
+                            buttonDisable ? (<button onClick={onSignup} className="w-[40%] rounded-lg px-3 py-2 mt-4 text-center text-black bg-green-600 text-md">SignUp</button>)
+                            : ""
+                        }
                     </div>
 
-                    <div className="w-full h-full items-center text-center">
+                    <div className="w-full h-full items-center text-center mt-3">
                     <Link className=" text-zinc-400 text-xs select-none" href='/login'>Don't have an Account? <span className="text-blue-400 tracking-wide hover:text-blue-300 text-sm">Login</span></Link>
                     </div>
             </div>
