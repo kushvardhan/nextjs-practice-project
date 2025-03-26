@@ -1,9 +1,9 @@
+import jsonwebtoken from 'jsonwebtoken';
 import { connect } from '@/dbConfig/dbConfig';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 import bcryptjs from 'bcryptjs';
 import { cookies } from 'next/headers';
-import jsonwebtoken from 'jsonwebtoken';
 
 connect();
 
@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
         if (!user._id) {
             return NextResponse.json({ message: "User ID is missing." }, { status: 500 });
         }
-        const token = jsonwebtoken.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY!, { expiresIn: '1h' });
+        const token = jsonwebtoken.sign({ id: user._id, email: user.email,username:user.username }, process.env.SECRET_KEY!, { expiresIn: '1h' });
 
-        cookies().set('token', token, {
+        await cookies().set('token', token, {
             httpOnly: true,
         });
 
