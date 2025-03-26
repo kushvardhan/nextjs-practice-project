@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         }
         const token = jsonwebtoken.sign({ id: user._id, email: user.email,username:user.username }, process.env.SECRET_KEY!, { expiresIn: '1h' });
 
-        await cookies().set('token', token, {
+        await (await cookies()).set('token', token, {
             httpOnly: true,
         });
 
